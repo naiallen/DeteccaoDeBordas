@@ -1,0 +1,77 @@
+%% Exemplo para operador gradiente
+close all
+clear all
+clc
+
+%Reads the image
+imrgb = imread('borda.png');
+imagesc(imrgb); %Scale data and display as image
+colormap (gray); %Sets the current figure's colormap to MAP.
+title('Imagem Original'); %Image Title
+
+[y,x,z] = size(imrgb);
+
+im =rgb2gray(imrgb);
+
+Gx = zeros(y, x);
+Gy = zeros(y, x);
+
+Gxd = zeros(y, x);
+Gyd = zeros(y, x);
+
+fprintf ('Tipo de operador Gradiente: \n');
+fprintf ('1: Diferença Central \n');
+fprintf ('2: Sobel \n');
+fprintf ('3: Sobel (Bordas Diagonais) \n');
+
+OG = input('Escolha: ');
+
+for j = 2:y-1
+    for i = 2:x-1
+        z1 = double(im(j-1, i-1, 1)); z2 = double(im(j-1, i, 1)); z3 = double(im(j-1, i+1, 1));
+        z4 = double(im(j, i-1, 1)); z5 = double(im(j, i, 1)); z6 = double(im(j, i+1, 1));
+        z7 = double(im(j+1, i-1, 1)); z8 = double(im(j+1, i, 1)); z9 = double(im(j+1, i+1, 1));
+        
+        if OG == 1
+            Gx(j,i) = uint8( z6 - z4 ); 
+            Gy(j,i) = uint8( z8 - z2 );
+        else if OG == 2
+            Gx(j,i) = uint8( (z3 + 2*z6 + z9) - (z1 + 2*z4 + z7) );
+            Gy(j,i) = uint8( (z9 + 2*z8 + z7) - (z3+ 2*z2 + z1) );
+            
+       % else if OG == 2
+             Gxd(j,i) = uint8( (z2 + 2*z3 + z6) - (z4 + 2*z7 + z8) );
+             Gyd(j,i) = uint8( (z6 + 2*z9 + z8) - (z2 + 2*z1 + z4) ); 
+        %    end
+            end
+        end
+        
+    end
+end
+
+Total = abs(Gx+Gxd)+abs(Gy+Gyd);
+
+figure;
+imagesc(abs(Gx)); 
+colormap (gray); 
+title('Gx');
+figure;
+
+imagesc(Gxd); 
+colormap (gray); 
+title('Gxd');
+figure;
+
+imagesc(Gy); 
+colormap (gray); 
+title('Gy');
+figure;
+
+imagesc(Gyd); 
+colormap (gray); 
+title('Gyd');
+
+figure;
+imagesc(Total); 
+colormap (gray); 
+title('Gx + Gy');
